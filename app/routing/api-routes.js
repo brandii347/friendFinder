@@ -18,6 +18,8 @@ module.exports = function (app) {
 
         //result of the users survey POST and parse it
         var userData = req.body;
+        var userName = userData.name;
+        var userPhoto = userData.photo;
         var userScores = userData.scores;
 
         console.log(userScores);
