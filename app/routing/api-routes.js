@@ -1,6 +1,7 @@
-var friends = require("../data/friends.js");
+var friends = require("../data/friends");
 
 module.exports = function (app) {
+
     app.get("/api/friends", function(req, res) {
         res.json(friends);
     });
@@ -11,39 +12,44 @@ module.exports = function (app) {
         var bestMatch = {
             name: "",
             photo: "",
-            friendDifference: 1000
+            friendDifference: Infinity
         };
 
         console.log(req.body);
 
         //result of the users survey POST and parse it
         var userData = req.body;
-        var userName = userData.name;
-        var userPhoto = userData.photo;
+       // var userName = userData.name;
+        //var userPhoto = userData.photo;
         var userScores = userData.scores;
 
-        console.log(userScores);
+        //console.log(userScores);
 
-        var totalDifference = 0;
+        var totalDifference;
 
 //for loop to loop through all friends possibilities in database
         for (var i=0; i < friends.length; i++){
-            console.log(friends[i]);
+            var currentFriend = friends[i];
             totalDifference = 0;
 
+            console.log(currentFriend.name);
+
             //loop through all scores of each friend
-            for(var j = 0; j = friends[i].scores[j]; j++){
+            for(var j = 0; j < currentFriend.scores.length; j++){
+
+                    var currentFriendScore = currentFriend.scores[j];
+                    var currentUserScore = userScores[j];
 
                 //calculate the difference b/t the scores and add them into totalDifference
                 //Math.abs returns absoulute value of given number
-                totalDifference += Math.abs(parseInt(userScores[j]) - parseInt(friends[i].scores[j]));
+                totalDifference += Math.abs(parseInt(currentUserScore) - parseInt(currentFriendScore));
 
                 //if sum of difference is less then the differences of the current "best match"
                 if (totalDifference <= bestMatch.friendDifference){
 
                     //resets the bestMatch to be the new friend
-                    bestMatch.name = friends[i].name;
-                    bestMatch.photo = friends[i].photo;
+                    bestMatch.name = currentFriend.name;
+                    bestMatch.photo = currentFriend.photo;
                     bestMatch.friendDifference = totalDifference;
 
                 }
@@ -54,6 +60,6 @@ module.exports = function (app) {
     friends.push(userData);
 
     //return JSON w/ the user's bestMatch. This will be used by the HTML in the next page
-    res.JSON(bestMatch);
-    })
-}
+    res.json(bestMatch);
+    });
+};
